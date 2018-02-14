@@ -56,22 +56,11 @@ class PlaintextParser(DocumentParser):
 
     @cached_property
     def document(self):
-        current_paragraph = []
         paragraphs = []
         for line in self._text.splitlines():
-            line = line.strip()
-            if line.isupper():
-                heading = Sentence(line, self._tokenizer, is_heading=True)
-                current_paragraph.append(heading)
-            elif not line and current_paragraph:
-                sentences = self._to_sentences(current_paragraph)
-                paragraphs.append(Paragraph(sentences))
-                current_paragraph = []
-            elif line:
-                current_paragraph.append(line)
-
-        sentences = self._to_sentences(current_paragraph)
-        paragraphs.append(Paragraph(sentences))
+            paragraphs.append(line)
+        sentences = self._to_sentences(paragraphs)
+        paragraphs = [Paragraph(sentences)]
 
         return ObjectDocumentModel(paragraphs)
 
