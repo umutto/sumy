@@ -22,7 +22,8 @@ class AbstractSummarizer(object):
         self._stemmer = stemmer
 
     def __call__(self, document, sentences_count):
-        raise NotImplementedError("This method should be overriden in subclass")
+        raise NotImplementedError(
+            "This method should be overriden in subclass")
 
     def stem_word(self, word):
         return self._stemmer(self.normalize_word(word))
@@ -34,10 +35,11 @@ class AbstractSummarizer(object):
         rate = rating
         if isinstance(rating, dict):
             assert not args and not kwargs
-            rate = lambda s: rating[s]
+
+            def rate(s): return rating[s]
 
         infos = (SentenceInfo(s, o, rate(s, *args, **kwargs))
-            for o, s in enumerate(sentences))
+                 for o, s in enumerate(sentences))
 
         # sort sentences by rating in descending order
         infos = sorted(infos, key=attrgetter("rating"), reverse=True)
@@ -48,4 +50,4 @@ class AbstractSummarizer(object):
         # sort sentences by their order in document
         infos = sorted(infos, key=attrgetter("order"))
 
-        return tuple(i.sentence for i in infos)
+        return ((i.sentence._text, i.rating) for i in infos)
